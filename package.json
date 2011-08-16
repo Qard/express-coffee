@@ -1,0 +1,19 @@
+{
+  "name": "express-coffee",
+  "description": "An express middleware to automatically compile and serve coffeescript files.",
+  "version": "0.0.1",
+  "homepage": "stephenbelanger.com",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Qard/express-coffee.git"
+  },
+  "author": "Stephen Belanger <admin@stephenbelanger.com> (stephenbelanger.com)",
+  "main": "index.js",
+  "directories": { },
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": {
+    "coffee-script":"*"
+  }
+}
