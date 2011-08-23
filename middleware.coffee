@@ -16,7 +16,7 @@ module.exports = (opts, coffee) ->
 
     else if !!~opts.watch.indexOf('.js') and !!~req.url.search(/.js$/)
       jfile = opts.path + req.url
-      cfile = cfile.replace /.js$/, '.coffee'
+      cfile = jfile.replace /.js$/, '.coffee'
     
     # These aren't the droids you're looking for.
     else return do next
@@ -25,7 +25,7 @@ module.exports = (opts, coffee) ->
     end = (txt) ->
       res.contentType 'javascript'
       res.header 'Content-Length', txt.length
-      res.send txt, 200
+      res.send txt
     
     # Yup, we have to (re)compile.
     compile = ->
@@ -46,11 +46,11 @@ module.exports = (opts, coffee) ->
           if err then end jdata
           else
             # Get mod date of .js file.
-            ctime = (new Date cstat.mtime).getTime()
+            ctime = do (new Date cstat.mtime).getTime
             file.stat jfile, (err, jstat) ->
               if err then end jdata
               else
                 # Compare mod dates.
-                jtime = (new Date jstat.mtime).getTime()
+                jtime = do (new Date jstat.mtime).getTime
                 if ctime <= jtime then end jdata
                 else do compile
