@@ -14,11 +14,13 @@ module.exports = (opts, coffee) ->
   # Return the middleware
   (req, res, next) ->
     # Make sure the current URL ends in either .coffee or .js
-    if  !~req.url.search(/^\/javascripts/) and !~req.url.search(/.js$/) then do next
+    if  !~req.url.search(/^\/javascripts/) or !~req.url.search(/.js$/) then do next
     else
       jfile = opts.path + req.url
-      cfile = jfile.replace(/^\/javascripts/, '/coffeescripts')
+      cfile = opts.path + req.url.replace(/^\/javascripts/, '/coffeescripts')
       cfile = cfile.replace(/.js$/, '.coffee')
+      
+      console.log 'express-coffee running on ', cfile
       
       # Handle the final serve.
       end = (txt) ->
