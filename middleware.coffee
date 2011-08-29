@@ -8,8 +8,9 @@ pro = uglify.uglify
 
 # Export closure to build middleware.
 module.exports = (opts, coffee) ->
-  if typeof opts.uglify is 'undefined' then opts.uglify = true
-  if typeof opts.live is 'undefined' then opts.live = !process.env.PRODUCTION
+  live = !!process.env.PRODUCTION
+  if typeof opts.uglify is 'undefined' then opts.uglify = !live
+  if typeof opts.live is 'undefined' then opts.live = !live
 
   # Return the middleware
   (req, res, next) ->

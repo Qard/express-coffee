@@ -24,10 +24,10 @@ Express-coffee is an express middleware that automatically compiles and serves c
 The path variable is the path to your static files. Basically this is just used to map req.url onto for file paths. Requests to /javascripts/file.js will result in compilation of /coffeescripts/file.coffee
 
 #### definition.live = (boolean)
-If live is enabled, the middleware will check every request if the coffeescript file has been modified recently and recompile the javascript file if it's older. Otherwise, the middleware will only check to make sure the compiled javascript file exists and serve that, regardless of age. Live is disabled by default. I recommend using something like !process.env.PRODUCTION to set it, so it only recompiles per-request while in development.
+If live is enabled, the middleware will check every request if the coffeescript file has been modified recently and recompile the javascript file if it's older. Otherwise, the middleware will only check to make sure the compiled javascript file exists and serve that, regardless of age. Default is !process.env.PRODUCTION.
 
-#### definition.watch = (string | array)
-The watch list is an array or comma-separated string used to specify if you want the middleware to run for both .coffee and .js extensions. By default, only the .coffee extension is monitored.
+#### definition.uglify = (boolean)
+Whether or not to uglify/minify the resulting javascript after the compile step. Default is !process.env.PRODUCTION.
 
 ---
 
