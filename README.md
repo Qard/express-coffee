@@ -27,7 +27,7 @@ The path variable is the path to your static files. Basically this is just used 
 If live is enabled, the middleware will check every request if the coffeescript file has been modified recently and recompile the javascript file if it's older. Otherwise, the middleware will only check to make sure the compiled javascript file exists and serve that, regardless of age. Default is !process.env.PRODUCTION.
 
 #### definition.uglify = (boolean)
-Whether or not to uglify/minify the resulting javascript after the compile step. Default is !process.env.PRODUCTION.
+Whether or not to uglify/minify the resulting javascript after the compile step. Default is process.env.PRODUCTION.
 
 ---
 
