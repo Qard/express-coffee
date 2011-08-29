@@ -42,10 +42,11 @@ module.exports = (opts, coffee) ->
             ctxt = coffee.compile do cdata.toString
 
             # Ugligfy!
-            ast = jsp.parse ctxt
-            ast = pro.ast_mangle ast
-            ast = pro.ast_squeeze ast
-            ctxt = pro.gen_code ast
+            if opts.uglify
+              ast = jsp.parse ctxt
+              ast = pro.ast_mangle ast
+              ast = pro.ast_squeeze ast
+              ctxt = pro.gen_code ast
 
             # Return
             end ctxt
