@@ -46,7 +46,13 @@ module.exports = (opts, coffee) ->
 
               # Return result
               end ctxt
-              file.writeFile jfile, ctxt
+
+              # Save to file. Make new directory, if necessary.
+              path = jfile.substr 0, jfile.lastIndexOf '/'
+              file.stat path, (err, stat) ->
+                save = -> file.writeFile jfile, ctxt
+                if not err and stat.isDirectory() then do save
+                else file.mkdir path, 0666, save
             
             # Continue on errors.
             catch err
