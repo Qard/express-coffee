@@ -1,6 +1,8 @@
 # express-coffee
 Express-coffee is an express middleware that automatically compiles and serves coffeescript files.
 
+## WARNING: 0.0.2 has breaking changes. If you use this, update your code.
+
 ## Requirements
 * Node.js 0.4+
 * Coffeescript
@@ -19,7 +21,7 @@ Express-coffee is an express middleware that automatically compiles and serves c
     }));
 
 #### definition.path = (string)
-The path variable is the path to your static files. Basically this is just used to map req.url onto for file paths.
+The path variable is the path to your static files. Basically this is just used to map req.url onto for file paths. Requests to /javascripts/file.js will result in compilation of /coffeescripts/file.coffee
 
 #### definition.live = (boolean)
 If live is enabled, the middleware will check every request if the coffeescript file has been modified recently and recompile the javascript file if it's older. Otherwise, the middleware will only check to make sure the compiled javascript file exists and serve that, regardless of age. Live is disabled by default. I recommend using something like !process.env.PRODUCTION to set it, so it only recompiles per-request while in development.
