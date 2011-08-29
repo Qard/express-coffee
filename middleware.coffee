@@ -20,8 +20,6 @@ module.exports = (opts, coffee) ->
       cfile = opts.path + req.url.replace(/^\/javascripts/, '/coffeescripts')
       cfile = cfile.replace(/.js$/, '.coffee')
       
-      console.log 'express-coffee running on ', cfile
-      
       # Handle the final serve.
       end = (txt) ->
         res.contentType 'javascript'
