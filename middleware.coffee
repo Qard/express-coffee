@@ -1,5 +1,10 @@
 # Load dependencies.
 file = require 'fs'
+uglify = require 'uglify-js'
+
+# Get parser and uglifier
+jsp = uglify.parser
+pro = uglify.uglify
 
 # Export closure to build middleware.
 module.exports = (opts, coffee) ->
@@ -32,9 +37,23 @@ module.exports = (opts, coffee) ->
       file.readFile cfile, (err, cdata) ->
         if err then do next
         else
-          ctxt = coffee.compile do cdata.toString
-          end ctxt
-          file.writeFile jfile, ctxt
+          # Don't crash the server just because a compile failed.
+          try
+            ctxt = coffee.compile do cdata.toString
+
+            # Ugligfy!
+            ast = jsp.parse ctxt
+            ast = pro.ast_mangle ast
+            ast = pro.ast_squeeze ast
+            ctxt = pro.gen_code ast
+
+            # Return
+            end ctxt
+            file.writeFile jfile, ctxt
+          
+          # Continue on errors.
+          catch err
+            do next
     
     # Check if the .js file exists.
     file.readFile jfile, (err, jdata) ->
