@@ -55,8 +55,7 @@ module.exports = (opts, coffee) ->
                 else file.mkdir path, 0666, save
             
             # Continue on errors.
-            catch err
-              do next
+            catch err then do next
       
       # Check if the .js file exists.
       file.readFile jfile, (err, jdata) ->
