@@ -1,3 +1,5 @@
+# TODO: Evaluate if file.watchFile() will work better.
+
 # Load dependencies.
 file = require 'fs'
 uglify = require 'uglify-js'
