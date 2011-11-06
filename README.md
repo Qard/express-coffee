@@ -24,6 +24,12 @@ Express-coffee is an express middleware that automatically compiles and serves c
 #### definition.path = (string)
 The path variable is the path to your static files. Basically this is just used to map req.url onto for file paths. Requests to /javascripts/file.js will result in compilation of /coffeescripts/file.coffee
 
+#### definition.src = (string)
+Rather than specifying a 'path' you may specify a src and dest filepath.  If src is '/views' then coffeescript files will be compiled from '/views/coffeescripts/'.  If no src is specified, src will be set to the provided path option.  If neither is provided, an error will be thrown.
+
+#### definition.dest = (string)
+dest specifies the location in which to sace compiled javascript files.  If dest is '/public' then javascript files will be compiled to '/public/javascripts/'.  If no dest is specified, dest will be set to the provided path option.  If neither is provided, an error will be thrown.
+
 #### definition.live = (boolean)
 If live is enabled, the middleware will check every request if the coffeescript file has been modified recently and recompile the javascript file if it's older. Otherwise, the middleware will only check to make sure the compiled javascript file exists and serve that, regardless of age. Default is !process.env.PRODUCTION.
 
