@@ -1,7 +1,7 @@
 {
   "name": "express-coffee",
   "description": "An express middleware to automatically compile and serve coffeescript files.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "homepage": "stephenbelanger.com",
   "repository": {
     "type": "git",
