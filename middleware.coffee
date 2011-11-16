@@ -14,18 +14,26 @@ module.exports = (opts, coffee) ->
   if typeof opts.uglify is 'undefined' then opts.uglify = live
   if typeof opts.live is 'undefined' then opts.live = !live
 
+  # determine if a single path was provided or if seperate dest and src paths were provided
+  if opts.src and opts.dest
+    # do nothing.  We're set
+  else if opts.path
+    if not opts.src     # assume src is path
+      opts.src = opts.path
+    if not opts.dest    # assume dest is path
+      opts.dest = opts.path
   # Return the middleware
   (req, res, next) ->
     # Make sure the current URL ends in either .coffee or .js
     if  !~req.url.search(/^\/javascripts/) or !~req.url.search(/.js$/) then do next
     else
-      jfile = opts.path + req.url
-      cfile = opts.path + req.url.replace(/^\/javascripts/, '/coffeescripts')
+      jfile = opts.dest + req.url
+      cfile = opts.src + req.url.replace(/^\/javascripts/, '/coffeescripts')
       cfile = cfile.replace(/.js$/, '.coffee')
       
       # Handle the final serve.
       end = (txt) ->
-        res.contentType 'javascript'
+        res.contentType 'text/javascript'
         res.header 'Content-Length', txt.length
         res.send txt
       
