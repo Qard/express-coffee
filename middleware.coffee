@@ -33,8 +33,7 @@ module.exports = (opts, coffee) ->
       
       # Handle the final serve.
       end = (txt) ->
-        res.contentType 'text/javascript'
-        res.header 'Content-Length', txt.length
+        res.contentType 'js'
         res.send txt
       
       # Yup, we have to (re)compile.
