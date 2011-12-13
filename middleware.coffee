@@ -29,7 +29,7 @@ module.exports = (opts, coffee) ->
       # Determine coffeescript path.
       @cpath = @jpath.replace('/javascripts', '/coffeescripts').replace(/\.js$/, '.coffee')
     
-    time: (time) -> (new Date time.mtime).getTime
+    time: (time) -> (new Date time.mtime).getTime()
     
     needsCompile: (cb) ->
       @log 'checking if file needs (re)compiling'
