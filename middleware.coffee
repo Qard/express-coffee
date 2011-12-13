@@ -1,8 +1,8 @@
-# TODO: Evaluate if file.watchFile() will work better.
-
 # Load dependencies.
 file = require 'fs'
 uglify = require 'uglify-js'
+chainer = require 'chainer'
+require 'colors'
 
 # Get parser and uglifier
 jsp = uglify.parser
@@ -14,73 +14,90 @@ module.exports = (opts, coffee) ->
   if typeof opts.uglify is 'undefined' then opts.uglify = live
   if typeof opts.live is 'undefined' then opts.live = !live
 
-  # determine if a single path was provided or if seperate dest and src paths were provided
-  if opts.src and opts.dest
-    # do nothing.  We're set
-  else if opts.path
-    if not opts.src     # assume src is path
-      opts.src = opts.path
-    if not opts.dest    # assume dest is path
-      opts.dest = opts.path
+  # Compiler interface.
+  class Compiler
+    # Log compiler notices.
+    log: (msg) ->
+      if opts.debug
+        console.log '  express-coffee'.green+' - '+msg
+        console.log '    '+@jpath.grey
+        console.log ''
+
+    constructor: (@jpath, @debug) ->
+      @log 'compiler invoked'
+
+      # Determine coffeescript path.
+      @cpath = @jpath.replace('/javascripts', '/coffeescripts').replace(/\.js$/, '.coffee')
+    
+    time: (time) -> (new Date time.mtime).getTime
+    
+    needsCompile: (cb) ->
+      @log 'checking if file needs (re)compiling'
+      chain = new chainer
+      stats = {}
+      errs = {}
+
+      # Wrapper to log result.
+      done = (res) =>
+        if res then @log 'file needs to be recompiled'
+        cb res
+
+      # Create type handler
+      typeHandler = (type) =>
+        (err, stat) =>
+          errs[type] = err
+          stats[type] = stat
+          chain.next()
+      
+      # Fetch file info.
+      chain.add => file.stat @jpath, typeHandler 'js'
+      chain.add => file.stat @cpath, typeHandler 'coffee'
+
+      # Run the tests.
+      chain.add =>
+        if errs.coffee then return done false
+        if errs.js then return done true
+        done @time(stats.coffee) > @time(stats.js)
+      
+      chain.run()
+
+    compile: (cb) ->
+      @log '(re)compiling'
+
+      file.readFile @cpath, (err, cdata) =>
+        if err then cb()
+        else
+          try
+            # Attempt to compile to Javascript.
+            txt = coffee.compile cdata.toString()
+
+            # Ugligfy, if enabled.
+            if opts.uglify
+              ast = jsp.parse txt
+              ast = pro.ast_mangle ast
+              ast = pro.ast_squeeze ast
+              txt = pro.gen_code ast
+
+            # Save to file. Make new directory, if necessary.
+            path = @jpath.substr 0, @jpath.lastIndexOf '/'
+            file.stat path, (err, stat) =>
+              save = =>
+                file.writeFile @jpath, txt, =>
+                  @log '(re)compile complete'
+                  cb()
+              if not err and stat.isDirectory() then save()
+              else file.mkdir path, 0666, save
+          
+          # Continue on errors.
+          catch err
+            @log 'an error occurred while compiling the file: ' + err.message
+            cb()
+
   # Return the middleware
   (req, res, next) ->
-    # Make sure the current URL ends in either .coffee or .js
-    if  !~req.url.search(/^\/javascripts/) or !~req.url.search(/.js$/) then do next
-    else
-      jfile = opts.dest + req.url
-      cfile = opts.src + req.url.replace(/^\/javascripts/, '/coffeescripts')
-      cfile = cfile.replace(/.js$/, '.coffee')
-      
-      # Handle the final serve.
-      end = (txt) ->
-        res.contentType 'js'
-        res.send txt
-      
-      # Yup, we have to (re)compile.
-      compile = ->
-        file.readFile cfile, (err, cdata) ->
-          if err then do next
-          else
-            # Don't crash the server just because a compile failed.
-            try
-              # Attempt to compile to Javascript.
-              ctxt = coffee.compile do cdata.toString
+    # Ignore URLs that don't start in /javascripts and end in .js.
+    if not (/^\/javascripts/.test(req.url) and /\.js$/.test(req.url)) then return next()
 
-              # Ugligfy, if enabled.
-              if opts.uglify
-                ast = jsp.parse ctxt
-                ast = pro.ast_mangle ast
-                ast = pro.ast_squeeze ast
-                ctxt = pro.gen_code ast
-
-              # Return result
-              end ctxt
-
-              # Save to file. Make new directory, if necessary.
-              path = jfile.substr 0, jfile.lastIndexOf '/'
-              file.stat path, (err, stat) ->
-                save = -> file.writeFile jfile, ctxt
-                if not err and stat.isDirectory() then do save
-                else file.mkdir path, 0666, save
-            
-            # Continue on errors.
-            catch err then do next
-      
-      # Check if the .js file exists.
-      file.readFile jfile, (err, jdata) ->
-        if err then do compile
-        else if not opts.live then end jdata
-        else
-          # Get mod date of .coffee file.
-          file.stat cfile, (err, cstat) ->
-            if err then end jdata
-            else
-              # Get mod date of .js file.
-              ctime = do (new Date cstat.mtime).getTime
-              file.stat jfile, (err, jstat) ->
-                if err then end jdata
-                else
-                  # Compare mod dates.
-                  jtime = do (new Date jstat.mtime).getTime
-                  if ctime <= jtime then end jdata
-                  else do compile
+    # Run the compiler.
+    compiler = new Compiler opts.path + req.url
+    compiler.needsCompile (needs) -> if needs then compiler.compile next else next()
