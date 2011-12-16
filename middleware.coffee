@@ -2,6 +2,8 @@
 file = require 'fs'
 uglify = require 'uglify-js'
 chainer = require 'chainer'
+lager = require 'lager'
+log = new lager
 require 'colors'
 
 # Get parser and uglifier
@@ -19,9 +21,7 @@ module.exports = (opts, coffee) ->
     # Log compiler notices.
     log: (msg) ->
       if opts.debug
-        console.log '  express-coffee'.green+' - '+msg
-        console.log '    '+@jpath.grey
-        console.log ''
+        log.log msg, @jpath
 
     constructor: (@jpath, @debug) ->
       @log 'compiler invoked'
