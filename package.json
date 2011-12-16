@@ -14,9 +14,9 @@
     "node": "*"
   },
   "dependencies": {
-    "coffee-script":"*",
-    "uglify-js":"*",
-    "chainer":"*",
-    "colors":"*"
+    "coffee-script":"~1.1.0",
+    "uglify-js":"~1.1.0",
+    "chainer":"~0.0.0",
+    "colors":"~0.5.0"
   }
 }
