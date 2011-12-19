@@ -3,7 +3,7 @@ file = require 'fs'
 uglify = require 'uglify-js'
 chainer = require 'chainer'
 lager = require 'lager'
-log = new lager
+log = new lager 'express-coffee'
 require 'colors'
 
 # Get parser and uglifier
