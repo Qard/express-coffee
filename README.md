@@ -20,6 +20,7 @@ Express-coffee is an express middleware that automatically compiles and serves c
       live: !process.env.PRODUCTION,
       uglify: provess.env.PRODUCTION
     }));
+    app.use(express.static(__dirname+'/public'));
 
 #### definition.path = (string)
 The path variable is the path to your static files. Basically this is just used to map req.url onto for file paths. Requests to /javascripts/file.js will result in compilation of /coffeescripts/file.coffee
