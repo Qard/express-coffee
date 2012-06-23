@@ -18,7 +18,7 @@ Express-coffee is an express middleware that automatically compiles and serves c
     app.use(require('express-coffee')({
       path: __dirname+'/public',
       live: !process.env.PRODUCTION,
-      uglify: provess.env.PRODUCTION
+      uglify: process.env.PRODUCTION
     }));
     app.use(express.static(__dirname+'/public'));
 
