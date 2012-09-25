@@ -1,3 +1,5 @@
+### NOTE: This package has been obsoleted by [crsh](http://github.com/qard/crsh).
+
 # express-coffee
 Express-coffee is an express middleware that automatically compiles and serves coffeescript files. Live compilation can be easily disabled so you aren't wasting resources in production. A request for /javascripts/file.js will result in a recompilation check for /coffeescripts/file.coffee, if live is enabled. Recompilation only occurs if the .coffee file is newer than the .js file.
 
